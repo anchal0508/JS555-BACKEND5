@@ -31,13 +31,13 @@ app.use(helmet());
 //     credentials: true   // True: allows to store cookies, if false, won't store cookies in Applicaiton/cookies of browser
 // }));
 app.use(cors({
-    origin: process.env.FRONTEND_URL || 'https://abcrob.in',
+    // origin: 'http://localhost:5173', // 
+    origin: 'https://project.abcrob.in', // 
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
-    preflightContinue: false, // 👈 यह OPTIONS रिक्वेस्ट को आगे जाने से रोक देगा
-    optionsSuccessStatus: 204  // 👈 प्रीफ्लाइट रिक्वेस्ट के लिए 204 स्टेटस कोड वापस भेजेगा
+    allowedHeaders: ['Content-Type', 'Authorization']
 }));
+
 
 app.options('(.*)', cors()); 
 
