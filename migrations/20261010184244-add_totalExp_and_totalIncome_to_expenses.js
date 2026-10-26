@@ -10,14 +10,11 @@ module.exports = {
      * await queryInterface.createTable('users', { id: Sequelize.INTEGER });
      */
     await Promise.all([
-      queryInterface.addColumn('Expenses', 'totalExp', {
-        type: Sequelize.INTEGER,
-        defaultValue: 0
-      }),
-      queryInterface.addColumn('Expenses', 'totalIncome', {
-        type: Sequelize.INTEGER,
-        defaultValue: 0
-      })
+      
+      // queryInterface.addColumn('expenses', 'totalIncome', {
+      //   type: Sequelize.INTEGER,
+      //   defaultValue: 0
+      // })
     ])
   },
 
