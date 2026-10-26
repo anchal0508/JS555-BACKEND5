@@ -39,7 +39,6 @@ app.use(cors({
 }));
 
 
-app.options('(.*)', cors()); 
 
 // It can get the data from POSTMAN. Ex: information available in the link [Ex: name=Rahul&age=25]
 app.use(express.json());
