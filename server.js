@@ -64,9 +64,19 @@ app.use((err, req, res, next) => {
 })
 
 const PORT = 3000;
-db.sequelize.sync().then(() => {
-    app.listen(PORT, () => console.log('ONline ...'));
-})
-    .catch((err) => {
-        console.log("-----------", err.message);
+db.sequelize.authenticate()
+    .then(() => {
+        console.log("Database connected successfully...");
+        return db.sequelize.sync(); 
     })
+    .then(() => {
+        app.listen(PORT, '0.0.0.0', () => {
+            console.log(`Backend Server is Online on port ${PORT}...`);
+        });
+    })
+    .catch((err) => {
+        console.error(" DATABASE CONNECTION ERROR:", err.message);
+        app.listen(PORT, '0.0.0.0', () => {
+            console.log(`Server started in fallback mode on port ${PORT} due to DB error.`);
+        });
+    });
