@@ -10,9 +10,23 @@ const config = require(__dirname + '/../config/config.js')[env];
 const db = {};
 
 let sequelize;
-if (config.use_env_variable) {
+
+// CLOUD PRODUCTION KA FIX: Agar database URL string milta hai toh direct usse connect karo
+if (process.env.DATABASE_URL) {
+  sequelize = new Sequelize(process.env.DATABASE_URL, {
+    dialect: 'postgres',
+    dialectOptions: {
+      ssl: {
+        require: true,
+        rejectUnauthorized: false
+      }
+    },
+    logging: false // Logs clean rakhne ke liye queries console me nahi dikhengi
+  });
+} else if (config.use_env_variable) {
   sequelize = new Sequelize(process.env[config.use_env_variable], config);
 } else {
+  // Local development ke liye config file se credentials uthayega
   sequelize = new Sequelize(config.database, config.username, config.password, config);
 }
 
