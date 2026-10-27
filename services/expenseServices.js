@@ -94,14 +94,14 @@ const fetchAllexpenses = async ({ currUserId, page, limit, search }) => {
         include: [ 
             {
                 model: User, 
-                as: 'user',  
+                as: 'User',  
                 attributes: ['name'], 
             }
         ],
         where: {
             infoOf: 'EXPENSE'
         },
-        group: ['Expenses.userId', 'user.id', 'user.name'], 
+        group: ['Expenses.userId', 'User.id', 'User.name'], 
         order: [[sequelize.literal('"totalAmount"'), 'DESC']], 
         limit: 3,
         raw: true,
