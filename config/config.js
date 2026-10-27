@@ -43,5 +43,6 @@ module.exports =
         rejectUnauthorized: false
       }
     }
-  }
+  },
+  noPreparedStatements: true
 }
