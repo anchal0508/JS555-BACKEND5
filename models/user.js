@@ -11,9 +11,9 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      User.hasMany(models.expenses, {
+      User.hasMany(models.Expenses, {
           foreignKey: 'userId',
-          as: 'expenses',
+          as: 'Expenses',
           onDelete: 'CASCADE',
           onUpdate: 'CASCADE',
       })
@@ -53,8 +53,8 @@ module.exports = (sequelize, DataTypes) => {
     },
   }, {
     sequelize,
-    modelName: 'user',
-    tableName: 'users',
+    modelName: 'User',
+    tableName: 'Users',
     timestamps: true,
     hooks: {
       beforeCreate: async (user) => {
