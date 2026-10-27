@@ -53,8 +53,8 @@ module.exports = (sequelize, DataTypes) => {
     },
   }, {
     sequelize,
-    modelName: 'User',
-    tableName: 'Users',
+    modelName: 'user',
+    tableName: 'users',
     timestamps: true,
     hooks: {
       beforeCreate: async (user) => {

@@ -72,7 +72,7 @@ app.use((err, req, res, next) => {
     })
 })
 
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 db.sequelize.authenticate()
     .then(() => {
         console.log("Database connected successfully...");
