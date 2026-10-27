@@ -1,18 +1,15 @@
 const { Op } = require('sequelize');
 const { Expenses, sequelize, User } = require('../models/index');
 
-
 const addNewExpense = async ({ infoOf, description, amount, date, category, currUserId }) => {
-
     const amountInt = Number(amount);
 
-    // find recent  row
+    // find recent row
     const lastExp = await Expenses.findOne({
         where: { userId: currUserId },
         order: [['createdAt', 'DESC']],
         raw: true
     });
-
 
     const lastTotalExp = lastExp ? Number(lastExp.totalExp) : 0;
     const lastTotalIncome = lastExp ? Number(lastExp.totalIncome) : 0;
@@ -40,17 +37,16 @@ const addNewExpense = async ({ infoOf, description, amount, date, category, curr
     });
 
     return response;
-}
+};
 
 const fetchAllexpenses = async ({ currUserId, page, limit, search }) => {
-
-    let limitNum = Number(limit);
-    const pageNum = Number(page);
+    let limitNum = Number(limit) || 10;
+    const pageNum = Number(page) || 1;
     let offsetValue = (pageNum * limitNum) - limitNum;
 
-
     // Fetching data according to the limit
-    let whereClause = { userId: currUserId, };
+    let whereClause = { userId: currUserId };
+    
     if (search && search.trim() !== "") {
         limitNum = 100;
         offsetValue = 0;
@@ -59,78 +55,70 @@ const fetchAllexpenses = async ({ currUserId, page, limit, search }) => {
             [Op.or]: [
                 {
                     description: {
-                        [Op.like]: `%${search.trim()}%` // iLike for postgreSQL case sensitive
+                        [Op.iLike]: `%${search.trim()}%` 
                     }
                 },
-
                 {
                     category: {
-                        [Op.like]: `%${search.trim()}%`
+                        [Op.iLike]: `%${search.trim()}%` 
                     }
                 }
-
             ]
-
         };
     }
-    const { rows: expenses, count: totalItems } = await Expenses.findAndCountAll({
 
+    const { rows: expenses, count: totalItems } = await Expenses.findAndCountAll({
         where: whereClause,
         limit: limitNum,
         offset: offsetValue,
         order: [['createdAt', 'DESC']]
     });
 
-    const totalPages = Math.ceil(totalItems / limitNum);
+    const totalPages = Math.ceil(totalItems / limitNum) || 1;
 
-    // Finging recent expense data
+    // Finding recent expense data
     const latestRecord = await Expenses.findOne({
         where: { userId: currUserId },
         order: [['createdAt', 'DESC']]
-
     });
 
-    if (!latestRecord) {
-        const error = new Error('No data found');
-        error.statusCode = 404;
-        throw error;
-    }
+    const totalExpense = latestRecord ? latestRecord.totalExp : 0;
+    const totalIncome = latestRecord ? latestRecord.totalIncome : 0;
 
-    // Fetcing top-3 expense
-   const topThreeLeader = await Expenses.findAll({ 
-    attributes: [
-        'userId',
-        [sequelize.fn('SUM', sequelize.col('amount')), 'totalAmount']
-    ],
-    include: [ 
-        {
-            model: User, 
-            as: 'user',  
-            attributes: ['name'], 
-            // required: true 
-        }
-    ],
-    where: {
-        infoOf: 'EXPENSE'
-    },
-    group: ['Expenses.userId', 'User.id', 'User.name'], 
-    order: [[sequelize.fn('SUM', sequelize.col('amount')), 'DESC']],
-    limit: 3,
-    raw: true,
-    nest: true 
-});
+    // Fetching top-3 expense
+    const topThreeLeader = await Expenses.findAll({ 
+        attributes: [
+            'userId',
+            [sequelize.fn('SUM', sequelize.col('amount')), 'totalAmount']  
+        ],
+        include: [ 
+            {
+                model: User, 
+                as: 'user',  
+                attributes: ['name'], 
+            }
+        ],
+        where: {
+            infoOf: 'EXPENSE'
+        },
+        group: ['Expenses.userId', 'user.id', 'user.name'], 
+        order: [[sequelize.literal('"totalAmount"'), 'DESC']], 
+        limit: 3,
+        raw: true,
+        nest: true 
+    });
+
     return {
-        expenses: expenses,
+        expenses: expenses || [],
         totalPages: totalPages,
         totalItems: totalItems,
-        totalExpense: latestRecord ? latestRecord.totalExp : 0,
-        totalIncome: latestRecord ? latestRecord.totalIncome : 0,
-        topLeaders: topThreeLeader
+        totalExpense: totalExpense,
+        totalIncome: totalIncome,
+        topLeaders: topThreeLeader || []
     };
-}
+};
+
 module.exports = {
     addNewExpense,
     fetchAllexpenses,
-
-
-}
+};
