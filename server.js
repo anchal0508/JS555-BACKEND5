@@ -3,20 +3,20 @@ const express = require('express');
 const app = express();
 const cors = require('cors');
 const helmet = require('helmet');
-const { rateLimit } = require('express-rate-limit');
+// const { rateLimit } = require('express-rate-limit');
 const cookieParser = require('cookie-parser');
 const compression = require('compression');
 const db = require('./models/index');
 
-const limiter = rateLimit({
-    windowMs: 16 * 60 * 1000,   // how long to remember request for, in miliseconds.
-    limit: 100,                 // how many requests to allow.
-    standardHeaders: 'draft-8', // set Ratelimit header
-    message: { message: "Too many requests, please try again later." }
-});
+// const limiter = rateLimit({
+//     windowMs: 16 * 60 * 1000,   // how long to remember request for, in miliseconds.
+//     limit: 100,                 // how many requests to allow.
+//     standardHeaders: 'draft-8', // set Ratelimit header
+//     message: { message: "Too many requests, please try again later." }
+// });
 
 
-app.use(limiter);
+// app.use(limiter);
 
 // holds data when res.json executes, and final compression done in reverse order or our written code
 app.use(compression()); // compression middleware
