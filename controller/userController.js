@@ -45,8 +45,8 @@ const login = async (req, res, next) => {
 
         const token = jwt.sign(
             { userId: response.id, email: response.email, role: response.role },
-            process.env.JWT_SECRET_KEY,
-            { expiresIn: process.env.JWT_EXPIRE_IN }
+            process.env.JWT_SECRET_KEY ||  '16df155f-7995-4892-aa02-39eb9e1a435f',
+            { expiresIn: process.env.JWT_EXPIRE_IN || '1D'}
         )
 
         const isProduction = process.env.NODE_ENV === 'production';

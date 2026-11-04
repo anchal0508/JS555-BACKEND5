@@ -46,7 +46,7 @@ const fetchAllexpenses = async ({ currUserId, page, limit, search }) => {
 
     // Fetching data according to the limit
     let whereClause = { userId: currUserId };
-    
+
     if (search && search.trim() !== "") {
         limitNum = 100;
         offsetValue = 0;
@@ -55,12 +55,12 @@ const fetchAllexpenses = async ({ currUserId, page, limit, search }) => {
             [Op.or]: [
                 {
                     description: {
-                        [Op.iLike]: `%${search.trim()}%` 
+                        [Op.iLike]: `%${search.trim()}%`
                     }
                 },
                 {
                     category: {
-                        [Op.iLike]: `%${search.trim()}%` 
+                        [Op.iLike]: `%${search.trim()}%`
                     }
                 }
             ]
@@ -86,26 +86,26 @@ const fetchAllexpenses = async ({ currUserId, page, limit, search }) => {
     const totalIncome = latestRecord ? latestRecord.totalIncome : 0;
 
     // Fetching top-3 expense
-    const topThreeLeader = await Expenses.findAll({ 
+    const topThreeLeader = await Expenses.findAll({
         attributes: [
             'userId',
-            [sequelize.fn('SUM', sequelize.col('amount')), 'totalAmount']  
+            [sequelize.fn('SUM', sequelize.col('amount')), 'totalAmount']
         ],
-        include: [ 
+        include: [
             {
-                model: User, 
-                as: 'User',  
-                attributes: ['name'], 
+                model: User,
+                as: 'User',
+                attributes: ['name'],
             }
         ],
         where: {
             infoOf: 'EXPENSE'
         },
-        group: ['Expenses.userId', 'User.id', 'User.name'], 
-        order: [[sequelize.literal('"totalAmount"'), 'DESC']], 
+        group: ['Expenses.userId', 'User.id', 'User.name'],
+        order: [[sequelize.literal('"totalAmount"'), 'DESC']],
         limit: 3,
         raw: true,
-        nest: true 
+        nest: true
     });
 
     return {
@@ -118,7 +118,29 @@ const fetchAllexpenses = async ({ currUserId, page, limit, search }) => {
     };
 };
 
+const categorizedData = async (currUserId) => {
+    let whereClause = { userId: currUserId, infoOf: 'EXPENSE' };
+    let dailyData;
+    let monthlyData;
+    let YearlyData;
+
+    monthlyData = await Expenses.findAll({
+        where: whereClause,
+        attributes: [
+            [sequelize.fn('DATE', sequelize.col('createdAt')), 'Date'],
+            [sequelize.fn("SUM", sequelize.col('amount')), 'Monthly Expense'],
+            [sequelize.fn("COUNT", sequelize.col('id')), "Expense Count"]
+        ],
+        group: [sequelize.fn('DATE', sequelize.col('createdAt'))],
+        order: [[sequelize.fn('DATE', sequelize.col('createdAt')), "DESC"]]
+    });
+    return monthlyData;
+}
+
+
+
 module.exports = {
     addNewExpense,
     fetchAllexpenses,
+    categorizedData,
 };

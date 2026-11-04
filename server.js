@@ -26,13 +26,10 @@ app.use(compression()); // compression middleware
 // Basically: sets HTTP response headers
 app.use(helmet());
 
-// app.use(cors({
-//     origin: process.env.FRONTEND_URL,
-//     credentials: true   // True: allows to store cookies, if false, won't store cookies in Applicaiton/cookies of browser
-// }));
+ 
 app.use(cors({
-    // origin: 'http://localhost:5173', // 
-    origin: 'https://project.abcrob.in', // 
+    origin: 'http://localhost:5173', // 
+    // origin: 'https://project.abcrob.in', // 
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization']

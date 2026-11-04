@@ -1,5 +1,5 @@
 const { Expenses } = require('../models/index');
-const { addNewExpense, fetchAllexpenses } = require('../services/expenseServices');
+const { addNewExpense, fetchAllexpenses, categorizedData } = require('../services/expenseServices');
 
 const addexpense = async (req, res, next) => {
     try {
@@ -41,9 +41,27 @@ const getAllExpenses = async (req, res, next) => {
     }
 }
 
-module.exports = {
-    addexpense,
-    deleteExpense,
-    updateExpense,
-    getAllExpenses,
-}
+const getReport = async (req, res, next) => {
+    try {
+        const currUserId = req.user.id;
+        const response = await categorizedData(currUserId);
+        return res.status(200).json({
+            success: true,
+            message: "Data Fetched successfully...",
+            expCategorisedDetail : response
+        });
+                
+    }
+        catch (error) {
+            console.log(error);
+            next(error);
+        }
+    }
+
+    module.exports = {
+        addexpense,
+        deleteExpense,
+        updateExpense,
+        getAllExpenses,
+        getReport
+    }
